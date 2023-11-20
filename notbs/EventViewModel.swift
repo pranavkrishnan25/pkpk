@@ -10,8 +10,17 @@ class EventViewModel: ObservableObject {
         self.userId = userId
         fetchData()
     }
+    
+    func updateUserId(_ userId: String) {
+        self.userId = userId
+        fetchData()
+    }
 
     func fetchData(completion: ((Result<Void, Error>) -> Void)? = nil) {
+        guard !userId.isEmpty else {
+            print("UserId is empty, cannot fetch data.")
+            return
+        }
         let userRef = db.collection("users").document(userId)
         userRef.collection("events").getDocuments { (querySnapshot, error) in
             if let error = error {

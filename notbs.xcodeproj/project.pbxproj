@@ -632,6 +632,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSCameraUsageDescription = "The app uses the camera to capture photos";
 				INFOPLIST_KEY_NSContactsUsageDescription = "To allow users to choose which other users from their contacts can have access to their posts";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The app uses the location when in use to find nearby pharmacies";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -667,6 +668,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSCameraUsageDescription = "The app uses the camera to capture photos";
 				INFOPLIST_KEY_NSContactsUsageDescription = "To allow users to choose which other users from their contacts can have access to their posts";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The app uses the location when in use to find nearby pharmacies";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

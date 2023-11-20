@@ -16,6 +16,7 @@ import FirebaseFirestore
 
 
 struct LaunchScreenView: View {
+    @EnvironmentObject var eventVM: EventViewModel
     @State var username: String = ""
     @State var password: String = ""
     @State var navigation: Int? = nil
@@ -93,7 +94,7 @@ struct LaunchScreenView: View {
                 Spacer()
 
                 NavigationLink(tag: 1, selection: $navigation) {
-                    SignUpView()
+                    SignUpView().environmentObject(eventVM)
                 } label: {
                     Text("Sign Up")
                         .foregroundColor(.blue)
@@ -114,15 +115,26 @@ struct LaunchScreenView: View {
         }
     }
 
+//    func login() {
+//        Auth.auth().signIn(withEmail: self.username, password: self.password) { (result, error) in
+//            if let error = error {
+//                self.loginError = error.localizedDescription
+//            } else {
+//                self.navigation = 2 // Redirect to ContentView
+//            }
+//        }
+//    }
     func login() {
         Auth.auth().signIn(withEmail: self.username, password: self.password) { (result, error) in
             if let error = error {
                 self.loginError = error.localizedDescription
-            } else {
+            } else if let userId = result?.user.uid {
+                self.eventVM.updateUserId(userId)
                 self.navigation = 2 // Redirect to ContentView
             }
         }
     }
+
 }
 
 
@@ -134,6 +146,7 @@ struct LaunchScreenView_Previews: PreviewProvider {
 }
 
 struct SignUpView: View {
+    @EnvironmentObject var eventVM: EventViewModel
     @State var username: String = ""
     @State var password: String = ""
     @State var repass: String = ""
@@ -236,21 +249,50 @@ struct SignUpView: View {
         .padding(.top, 10)
     }
 
+//    func register() {
+//        if password != repass {
+//            print("Passwords do not match") // You can also display an error message here
+//            return
+//        }
+//
+//        Auth.auth().createUser(withEmail: self.username, password: self.password) { (result, error) in
+//            if let error = error {
+//                print("Registration error: \(error.localizedDescription)") // Again, you can display this in a better way
+//            } else if let userId = result?.user.uid {
+//                // Registration was successful, store the phone number in Firestore
+//                let db = Firestore.firestore()
+//                db.collection("users").document(userId).setData([
+//                    "email": self.username,
+//                    "Password": self.password, // Storing passwords in Firestore is not recommended. Consider removing this.
+//                    "Phone Number": self.phoneNumber
+//                ]) { error in
+//                    if let error = error {
+//                        print("Error saving user data to Firestore: \(error.localizedDescription)")
+//                    } else {
+//                        print("User data saved successfully!")
+//                    }
+//                }
+//            }
+//        }
+//    }
     func register() {
         if password != repass {
-            print("Passwords do not match") // You can also display an error message here
+            print("Passwords do not match") // Display an appropriate error message
             return
         }
 
         Auth.auth().createUser(withEmail: self.username, password: self.password) { (result, error) in
             if let error = error {
-                print("Registration error: \(error.localizedDescription)") // Again, you can display this in a better way
+                print("Registration error: \(error.localizedDescription)") // Handle the error appropriately
             } else if let userId = result?.user.uid {
-                // Registration was successful, store the phone number in Firestore
+                // User registration successful, update the userId in EventViewModel
+                self.eventVM.updateUserId(userId)
+
+                // Store user information along with the password in Firestore
                 let db = Firestore.firestore()
                 db.collection("users").document(userId).setData([
                     "email": self.username,
-                    "Password": self.password, // Storing passwords in Firestore is not recommended. Consider removing this.
+                    "Password": self.password, // Storing the password in Firestore
                     "Phone Number": self.phoneNumber
                 ]) { error in
                     if let error = error {
@@ -262,4 +304,5 @@ struct SignUpView: View {
             }
         }
     }
+
 }
