@@ -11,55 +11,9 @@ struct ContactsView: View {
     @State private var groupOptions = ["Friends", "Family"]
     
     var body: some View {
-//        VStack {
-//            // Group Picker
-//            Picker("Group", selection: $selectedGroup) {
-//                ForEach(groupOptions, id: \.self) { group in
-//                    Text(group)
-//                }
-//            }
-//            .pickerStyle(SegmentedPickerStyle())
-//            .padding()
-//
-//            List(contacts, id: \.identifier) { contact in
-//                HStack {
-//                    VStack(alignment: .leading) {
-//                        Text("\(contact.givenName) \(contact.familyName)")
-//                        if let phoneNumber = contact.phoneNumbers.first?.value.stringValue {
-//                            Text(phoneNumber)
-//                                .font(.subheadline)
-//                                .foregroundColor(.gray)
-//                        }
-//                    }
-//                    Spacer()
-//                    if selectedContacts.contains(where: { $0.identifier == contact.identifier }) {
-//                        Image(systemName: "checkmark")
-//                    }
-//                }
-//                .contentShape(Rectangle())
-//                .onTapGesture {
-//                    if let index = selectedContacts.firstIndex(where: { $0.identifier == contact.identifier }) {
-//                        selectedContacts.remove(at: index)
-//                    } else {
-//                        selectedContacts.append(contact)
-//                    }
-//                }
-//            }
-//
-//
-//            // Send to Firebase Button
-//            Button("Send to Firebase") {
-//                sendToFirebase()
-//            }
-//            .padding()
-//        }
+
         VStack {
-            // Group Picker
-//            Picker("Group", selection: $selectedGroup) {
-//                ForEach(groupOptions, id: \.self) { group in
-//                    Text(group)
-//                }
-//            }
+
             HStack {
                 ForEach(groupOptions, id: \.self) { group in
                     Button(action: {
@@ -152,6 +106,20 @@ struct ContactsView: View {
             print("Failed to fetch contacts:", error)
         }
     }
+    func formatPhoneNumber(_ number: String) -> String {
+        let digitsOnly = number.filter("0123456789".contains)
+        let lastTenDigits = digitsOnly.suffix(10)
+        
+        if lastTenDigits.count == 10 {
+            let firstPart = lastTenDigits.prefix(3)
+            let middlePart = lastTenDigits.dropFirst(3).prefix(3)
+            let lastPart = lastTenDigits.suffix(4)
+            return "\(firstPart)-\(middlePart)-\(lastPart)"
+        } else {
+            // Return the original digits if there are not enough to format
+            return String(lastTenDigits)
+        }
+    }
 
     func sendToFirebase() {
         let db = Firestore.firestore()
@@ -160,8 +128,9 @@ struct ContactsView: View {
             let userId = user.uid
 
             for contact in selectedContacts {
-                let phoneNumber = contact.phoneNumbers.first?.value.stringValue ?? ""
-
+                let rawPhoneNumber = contact.phoneNumbers.first?.value.stringValue ?? ""
+//                let phoneNumber = contact.phoneNumbers.first?.value.stringValue ?? ""
+                let phoneNumber = formatPhoneNumber(rawPhoneNumber)
                 // Check if this phoneNumber exists in the users collection
                 db.collection("users").whereField("Phone Number", isEqualTo: phoneNumber).getDocuments { (querySnapshot, error) in
                     if let error = error {
